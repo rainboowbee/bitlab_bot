@@ -1,9 +1,10 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { Nunito } from 'next/font/google'
+import { GeistSans, GeistMono } from 'geist/font'
 import { AuthProvider } from './providers/AuthProvider'
 
-const nunito = Nunito({ subsets: ['latin', 'cyrillic'], weight: ['400', '700'] })
+const geistSans = GeistSans
+const geistMono = GeistMono
 
 export const metadata: Metadata = {
   title: 'BitLab - Учебная платформа',
@@ -17,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ru">
-      <body className={nunito.className}>
+      <body className={`${geistSans.className} ${geistMono.className}`}>
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
