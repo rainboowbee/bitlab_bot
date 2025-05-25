@@ -13,12 +13,13 @@ export default function AdminDashboard() {
     if (status === 'loading') return; // Ждем загрузки сессии
 
     // Перенаправляем, если пользователь не авторизован или не админ
-    if (!session || session.user?.isAdmin !== true) {
+    // Временно обходим проверку типов с помощью as any
+    if (!session || (session.user as any)?.isAdmin !== true) {
       router.push('/'); // Или на страницу 403 Forbidden, если такая есть
     }
   }, [session, status, router]);
 
-  if (status === 'loading' || !session || session.user?.isAdmin !== true) {
+  if (status === 'loading' || !session || (session.user as any)?.isAdmin !== true) {
     // Отображаем индикатор загрузки или ничего, пока идет проверка
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -35,7 +36,7 @@ export default function AdminDashboard() {
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Панель Администратора</h1>
         {/* TODO: Добавить навигацию и компоненты для управления */}
         <div>
-          <p>Добро пожаловать, Администратор {session.user.name}!</p>
+          <p>Добро пожаловать, Администратор {(session.user as any).name}!</p>
           {/* Пример ссылки на раздел управления задачами */}
           {/* <Link href="/admin/tasks">Управление задачами</Link> */}
         </div>
