@@ -4,6 +4,9 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 // import { PrismaClient, Task } from '@prisma/client'; // No longer needed here
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function GET() {
   const session = await getServerSession(authOptions);
 
