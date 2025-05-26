@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-// import { PrismaClient, Task } from '@prisma/client'; // No longer needed here
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -26,21 +25,24 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
     const limit = searchParams.get('limit');
-    const section = searchParams.get('section');
+    const difficulty = searchParams.get('difficulty');
 
-    const tasks = await prisma.task.findMany({
+    const variants = await prisma.variant.findMany({
       where: {
-        ...(section ? { sectionNumber: parseInt(section) } : {})
+        ...(difficulty ? { difficulty } : {})
       },
       orderBy: {
-        createdAt: 'desc'
+        variantNumber: 'asc'
       },
-      ...(limit ? { take: parseInt(limit) } : {})
+      ...(limit ? { take: parseInt(limit) } : {}),
+      include: {
+        tasks: true
+      }
     });
 
-    return NextResponse.json({ data: tasks });
+    return NextResponse.json({ data: variants });
   } catch (error) {
-    console.error('Error fetching tasks:', error);
+    console.error('Error fetching variants:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
@@ -63,27 +65,23 @@ export async function POST(request: Request) {
     }
 
     const data = await request.json();
-    const { title, description, maxPoints, sectionNumber, answer, solution, files } = data;
+    const { variantNumber, difficulty, name, description, taskIds } = data;
 
-    console.log('Полученные данные в POST:', { title, description, maxPoints, sectionNumber, answer, solution, files });
-
-    const task = await prisma.task.create({
+    const variant = await prisma.variant.create({
       data: {
-        title,
+        variantNumber,
+        difficulty,
+        name,
         description,
-        maxPoints,
-        sectionNumber,
-        answer,
-        solution,
-        files
+        tasks: {
+          connect: taskIds.map((id: string) => ({ id }))
+        }
       }
     });
 
-    console.log('Созданная задача:', task);
-
-    return NextResponse.json({ data: task });
+    return NextResponse.json({ data: variant });
   } catch (error) {
-    console.error('Error creating task:', error);
+    console.error('Error creating variant:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
@@ -110,34 +108,30 @@ export async function PUT(request: Request) {
 
     if (!id) {
       return NextResponse.json(
-        { error: 'Task ID is required' },
+        { error: 'Variant ID is required' },
         { status: 400 }
       );
     }
 
     const data = await request.json();
-    const { title, description, maxPoints, sectionNumber, answer, solution, files } = data;
+    const { variantNumber, difficulty, name, description, taskIds } = data;
 
-    console.log('Полученные данные в PUT:', { title, description, maxPoints, sectionNumber, answer, solution, files });
-
-    const task = await prisma.task.update({
+    const variant = await prisma.variant.update({
       where: { id },
       data: {
-        title,
+        variantNumber,
+        difficulty,
+        name,
         description,
-        maxPoints,
-        sectionNumber,
-        answer,
-        solution,
-        files
+        tasks: {
+          set: taskIds.map((id: string) => ({ id }))
+        }
       }
     });
 
-    console.log('Обновленная задача:', task);
-
-    return NextResponse.json({ data: task });
+    return NextResponse.json({ data: variant });
   } catch (error) {
-    console.error('Error updating task:', error);
+    console.error('Error updating variant:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 } 

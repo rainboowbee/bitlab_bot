@@ -76,11 +76,29 @@ export default function Header({ sidebarItems, onSidebarSelect, activeSidebarId 
                 <div className="hidden md:block">
                   <NavigationMenu>
                     <NavigationMenuList>
+                      {/* Пункт меню "Тесты" */}
+                      <NavigationMenuItem>
+                        <NavigationMenuTrigger>Тесты</NavigationMenuTrigger>
+                        <NavigationMenuContent style={{ minWidth: '436px' }}>
+                          <ul className="grid gap-1 p-4 md:grid-cols-2 max-w-lg lg:max-w-xl">
+                            <ListItem href="/tests/selection" title="Подборка заданий">
+                              Сгенерировать подборку заданий.
+                            </ListItem>
+                              <ListItem href="/tests/variants" title="Варианты">
+                                Решать готовые варианты тестов.
+                              </ListItem>
+                              <ListItem href="/tests/daily" title="Задача дня">
+                                Ежедневное задание.
+                              </ListItem>
+                           </ul>
+                         </NavigationMenuContent>
+                      </NavigationMenuItem>
+
                       {/* Пункт меню "Материал" */}
                       <NavigationMenuItem>
                         <NavigationMenuTrigger>Материал</NavigationMenuTrigger>
                         <NavigationMenuContent>
-                          <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                          <ul className="grid gap-1 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
                             <ListItem href="/theory" title="Теория">
                               Теоретические материалы по темам.
                             </ListItem>
@@ -95,24 +113,6 @@ export default function Header({ sidebarItems, onSidebarSelect, activeSidebarId 
                             </ListItem>
                           </ul>
                         </NavigationMenuContent>
-                      </NavigationMenuItem>
-
-                      {/* Пункт меню "Тесты" */}
-                      <NavigationMenuItem>
-                        <NavigationMenuTrigger>Тесты</NavigationMenuTrigger>
-                        <NavigationMenuContent>
-                          <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-                            <ListItem href="/tests/selection" title="Подборка заданий">
-                              Сгенерировать подборку заданий.
-                            </ListItem>
-                              <ListItem href="/tests/variants" title="Варианты">
-                                Решать готовые варианты тестов.
-                              </ListItem>
-                              <ListItem href="/tests/daily" title="Задача дня">
-                                Ежедневное задание.
-                              </ListItem>
-                           </ul>
-                         </NavigationMenuContent>
                       </NavigationMenuItem>
 
                       {/* Пункт меню "Профиль" */}

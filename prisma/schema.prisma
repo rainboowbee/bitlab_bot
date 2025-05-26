@@ -78,6 +78,8 @@ model UserTaskActivity {
 model Variant {
   id            String    @id @default(cuid())
   variantNumber Int       @unique
+  name          String?
+  description   String?
   difficulty    String
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt

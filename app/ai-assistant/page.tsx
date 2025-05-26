@@ -4,6 +4,11 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Header from '../components/Header';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm'; // Для поддержки таблиц, сносок и т.д.
+import rehypeRaw from 'rehype-raw'; // Для рендеринга HTML внутри Markdown (используйте с осторожностью)
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { okaidia } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface Message {
   id: string;
@@ -40,17 +45,35 @@ export default function AIAssistant() {
     setInput('');
     setIsLoading(true);
 
-    // Имитация ответа ассистента
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/ai-assistant', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userMessage.content }),
+      });
+
+      const data = await response.json();
+
       const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: 'Это пример ответа ИИ ассистента. В реальном приложении здесь будет интеграция с API ИИ.',
+        id: Date.now().toString(),
+        content: data.message || data.error || 'Произошла ошибка при получении ответа.',
         role: 'assistant',
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, assistantMessage]);
+
+    } catch (error) {
+      console.error('Error fetching AI response:', error);
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        content: 'Произошла ошибка при отправке запроса к ИИ ассистенту.',
+        role: 'assistant',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   if (status === 'loading') {
@@ -88,7 +111,31 @@ export default function AIAssistant() {
                           : 'bg-gray-100 text-gray-900'
                       }`}
                     >
-                      <p>{message.content}</p>
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        rehypePlugins={[rehypeRaw]}
+                        components={{
+                          code({ node, inline, className, children, ...props }) {
+                            const match = /language-(\w+)/.exec(className || '');
+                            return !inline && match ? (
+                              <SyntaxHighlighter
+                                style={okaidia}
+                                language={match[1]}
+                                PreTag="div"
+                                {...props}
+                              >
+                                {String(children).replace(/\n$/, '')}
+                              </SyntaxHighlighter>
+                            ) : (
+                              <code className={className} {...props}>
+                                {children}
+                              </code>
+                            );
+                          },
+                        }}
+                      >
+                        {message.content}
+                      </ReactMarkdown>
                       <span className="text-xs opacity-70 mt-1 block">
                         {message.timestamp.toLocaleTimeString()}
                       </span>
