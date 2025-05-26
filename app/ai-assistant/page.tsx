@@ -115,19 +115,21 @@ export default function AIAssistant() {
                         remarkPlugins={[remarkGfm]}
                         rehypePlugins={[rehypeRaw]}
                         components={{
-                          code({ node, inline, className, children, ...props }) {
+                          code(props: any) {
+                            const {node, className, children, ...rest} = props;
+                            const isInline = props.inline;
                             const match = /language-(\w+)/.exec(className || '');
-                            return !inline && match ? (
+                            return !isInline && match ? (
                               <SyntaxHighlighter
                                 style={okaidia as any}
                                 language={match[1]}
                                 PreTag="div"
-                                {...props}
+                                {...rest}
                               >
                                 {String(children).replace(/\n$/, '')}
                               </SyntaxHighlighter>
                             ) : (
-                              <code className={className} {...props}>
+                              <code className={className} {...rest}>
                                 {children}
                               </code>
                             );

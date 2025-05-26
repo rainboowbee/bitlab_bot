@@ -68,9 +68,10 @@ export default function VariantsEditor() {
 
         const uniqueSections = Array.from(new Set(tasksData.data
           .map((task: Task) => task.sectionNumber)
-          .filter((section: number | null) => section !== null)
-        )).sort((a, b) => (a || 0) - (b || 0));
-        setTaskSections(uniqueSections as number[]);
+          .filter((section: number | null): section is number => section !== null)
+        )) as number[];
+        uniqueSections.sort((a, b) => a - b);
+        setTaskSections(uniqueSections);
 
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
