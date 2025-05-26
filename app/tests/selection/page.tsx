@@ -197,19 +197,21 @@ const TaskCard = ({ task, onSubmit }: { task: Task; onSubmit: (answer: string) =
                     remarkPlugins={[remarkGfm]}
                     rehypePlugins={[rehypeRaw]}
                      components={{
-                      code({ node, inline, className, children, ...props }) {
+                      code(props: any) {
+                        const {node, className, children, ...rest} = props;
+                        const isInline = !className;
                         const match = /language-(\w+)/.exec(className || '');
-                        return !inline && match ? (
+                        return !isInline && match ? (
                           <SyntaxHighlighter
-                            style={okaidia}
+                            style={okaidia as any}
                             language={match[1]}
                             PreTag="div"
-                            {...props}
+                            {...rest}
                           >
                             {String(children).replace(/\n$/, '')}
                           </SyntaxHighlighter>
                         ) : (
-                          <code className={className} {...props}>
+                          <code className={className} {...rest}>
                             {children}
                           </code>
                         );
