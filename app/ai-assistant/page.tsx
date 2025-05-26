@@ -119,7 +119,7 @@ export default function AIAssistant() {
                             const match = /language-(\w+)/.exec(className || '');
                             return !inline && match ? (
                               <SyntaxHighlighter
-                                style={okaidia}
+                                style={okaidia as any}
                                 language={match[1]}
                                 PreTag="div"
                                 {...props}

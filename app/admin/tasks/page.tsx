@@ -46,12 +46,19 @@ export default function TasksEditor() {
         const data = await response.json();
         setTasks(data.data);
         
-        // Получаем уникальные номера разделов
-        const uniqueSections = Array.from(new Set(data.data
-          .map((task: Task) => task.sectionNumber)
-          .filter((section: number | null) => section !== null)
-        )).sort((a, b) => (a || 0) - (b || 0));
-        setSections(uniqueSections as number[]);
+        // // Временно отключено: Получаем уникальные номера разделов и сортируем
+        // const taskSectionNumbers = data.data
+        //   .map((task: Task) => task.sectionNumber);
+
+        // const filteredSections = taskSectionNumbers.filter((section): section is number => section !== null);
+
+        // const uniqueSectionsSet = new Set(filteredSections);
+
+        // const uniqueSectionsArray = Array.from(uniqueSectionsSet);
+
+        // const sortedSections = uniqueSectionsArray.sort((a, b) => a - b);
+
+        // setSections(sortedSections);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
